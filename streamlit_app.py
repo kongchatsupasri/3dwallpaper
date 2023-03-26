@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 head_col1, head_col2 = st.columns([3, 1])
 
 with head_col2:
-    language_radio = st.radio(label = 'select language', 
+    language = st.radio(label = 'select language', 
                               options = ('th', 'en'),
                               index = 0,
                               horizontal = True,
@@ -14,9 +14,15 @@ with head_col2:
 
 input_col1, input_col2 = st.columns(2)
 with input_col1: 
-    width = st.number_input('width (meters)', step = 0.1)
+    if language == 'th':
+        width = st.number_input('ความกว้าง (เมตร)', step = 0.1, min_value = 0.0, value = 0.0)
+    else:
+        width = st.number_input('width (meters)', step = 0.1, min_value = 0.0, value = 0.0)
 with input_col2:
-    height = st.number_input('height (meters)', step = 0.1)
+    if language == 'th':
+        height = st.number_input('ความสูง (เมตร)', step = 0.1, min_value = 0.0, value = 0.0)
+    else:
+        height = st.number_input('height (meters)', step = 0.1, min_value = 0.0, value = 0.0)
 
 
 def ปัดเศษ(input):
@@ -24,14 +30,15 @@ def ปัดเศษ(input):
 
 wh = ปัดเศษ(width * height) 
 
-total_wallpaper = math.ceil(wh * 4.0)
-st.subheader(f'total wallpaper = {total_wallpaper}')
-
 x_pieces = math.ceil(ปัดเศษ(width) * 2.0)
 y_pieces = math.ceil(ปัดเศษ(height) * 2.0) 
 
-st.write(f'horizontal_pieces = {x_pieces}', type(x_pieces))
-st.write(f'vertical_pieces = {y_pieces}', type(y_pieces))
+total_wallpaper = math.ceil(x_pieces * y_pieces)
+
+if language == 'th':
+    st.subheader(f'จำนวนแผ่นที่ต้องใช้ = {total_wallpaper}')
+else:
+    st.subheader(f'total wallpaper = {total_wallpaper}')
 
 panel = Image.open('white_wp.jpeg')
 panel = panel.resize((100, 100))
@@ -49,6 +56,6 @@ else:
 
     draw = ImageDraw.Draw(new_image)  
     draw.rectangle([(0,0),(width * 200, height * 200)],outline="#0000ff", width = 5)
-    draw.text((10, 10), "Hello", fill=(255,0,0,128))
+    # new_image = new_image.crop((0,0, width * 200, height * 200))
 
-    st.image(new_image, caption = 'caption')
+    st.image(new_image)
